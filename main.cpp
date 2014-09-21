@@ -2,19 +2,15 @@
 // アプリ雛形
 //
 
+#include "g_variable.h"
 #include "appEnv.hpp"
 #include "function.h"
+#include "title.h"
+
 using namespace std;
 
 
-// アプリのウインドウサイズ
-enum Window {
-	WIDTH = 1200,
-	HEIGHT = 500
-};
 
-
-// 
 // メインプログラム
 // 
 int main() {
@@ -38,22 +34,7 @@ int main() {
 	//背景色
 	app_env.bgColor(Color(0, 1, 0.2));
 
-	//ジャンプ
-	struct Jump
-	{
-		float y;
-		float vy;
-
-		bool jumping;
-	};
-
-
-	const float jump_power = 12.0f;
-	const float gravity = -0.8f;
-	int display = 2;
-
 	
-
 
 	
 // タイトル画面////////////////////////////////////////////////////////////////
@@ -80,14 +61,11 @@ int main() {
      	Media title_bgm("res/title_bgm.wav");
 		Media clear_bgm("res/clear_bgm.wav");
 	
-
-
-		Texture title_blacklien("res/title_blackLIEN.png");          //タイトル演出前
-		Texture title_lien("res/title_LIEN.png");                    //タイトル演出後
-		Texture title("res/title.png");                              //上に同じ    
-		Texture click_to_hack("res/click_to_hack.png");              //クリックしたらスタート
-		Texture zero_one("res/01.png");                               //01表示
-
+		//Texture title_blacklien("res/title_blackLIEN.png");          //タイトル演出前
+		//Texture title_lien("res/title_LIEN.png");                    //タイトル演出後
+		//Texture title("res/title.png");                              //上に同じ    
+		//Texture click_to_hack("res/click_to_hack.png");              //クリックしたらスタート
+		//Texture zero_one("res/01.png");                               //01表示
 
 
 		//乱数発生器
@@ -258,7 +236,7 @@ int main() {
 
 
 			case 0: {
-						
+						/*
 						//左クリックでタイトル演出起動 タイトル画像全部表示後クリックでブレイク
 						if (app_env.isPushButton(Mouse::LEFT))
 						{
@@ -335,15 +313,19 @@ int main() {
 								Color(1, 1, 1, 0.3 * -title_alpha));
 
 
-						}
+						}*/
+					
+						title_dis(app_env,warp_bgm,
+							  title_bgm,random);
+						display++;
+						
 			}
 				break;
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			case 1:
 			{
-
-					  //bgm
 					  title_bgm.stop();
+					  //bgm	 
 					  if (!menu_bgm.isPlaying() && display == 1)
 					  {
 						  menu_bgm.play();
@@ -354,8 +336,6 @@ int main() {
 					  //マウスポジション
 					  Vec2f mouse = app_env.mousePosition();
 
-
-
 					  //menu画面表示
 					  drawTextureBox(-Window::WIDTH / 2, -Window::HEIGHT / 2, WIDTH, HEIGHT,
 						  0, 0, 1200, 512,
@@ -364,7 +344,7 @@ int main() {
 					  //依頼主,会話相手をy軸にスクロール
 					  if (app_env.isPushKey(GLFW_KEY_UP) && scroll != 0)
 					  {
-						  scroll -= 300;
+						  scroll--;
 						  info_col = 0;
 						  go = false;
 						  info_bool = false;
@@ -372,9 +352,9 @@ int main() {
 						  madam_bool = false;
 						  secret_bool = false;
 					  }
-					  if (app_env.isPushKey(GLFW_KEY_DOWN) && scroll != 600)
+					  if (app_env.isPushKey(GLFW_KEY_DOWN) && scroll != 2)
 					  {
-						  scroll += 300;
+						  scroll++;
 						  info_col = 0;
 						  go        = false;
 						  info_bool = false;
@@ -382,8 +362,7 @@ int main() {
 						  madam_bool = false;
 						  secret_bool = false;
 					  }
-
-					
+	
 					  ////////////////////依頼者画面
 					  if (quest_bool == true)
 					  {
@@ -392,7 +371,7 @@ int main() {
 
 						  //依頼主画面表示
 						  drawTextureBox(-Window::WIDTH / 2, icon_posy, 1000, 300,
-							  0, 0 + scroll, 1024, 300,
+							  0, 0 + scroll * 300, 1024, 300,
 							  people,
 							  Color(1, icon_col, icon_col));
 
@@ -506,14 +485,14 @@ int main() {
 									 
 								  }
 								  break;
-							  case 300:
+							  case 1:
 								  drawTextureBox((-Window::WIDTH / 2 + 250), -Window::HEIGHT / 2 + 110,
 									  540, 330,
 									  0, 0, 540, 330,
 									  info_lock,
 									  Color(1, 1, 1, info_col));
 								  break;
-							  case 600:
+							  case 2:
 								  drawTextureBox((-Window::WIDTH / 2 + 250), -Window::HEIGHT / 2 + 110,
 									  540, 330,
 									  0, 0, 540, 330,
@@ -557,7 +536,7 @@ int main() {
 
 						  //会話表示
 						  drawTextureBox(-Window::WIDTH / 2, icon_posy, 1000, 300,
-							  0, 0 + scroll, 1024, 300,
+							  0, 0 + scroll * 300, 1024, 300,
 							  talk,
 							  Color(1, icon_col, icon_col));
 
@@ -574,11 +553,11 @@ int main() {
 								  {
 									  shop_bool = true;
 								  }
-								  else if (scroll == 300)
+								  else if (scroll == 1)
 								  {
 									  madam_bool = true;
 								  }
-								  else if (scroll == 600)
+								  else if (scroll == 2)
 								  {
 									  secret_bool = true;
 								  }
@@ -837,6 +816,7 @@ int main() {
 						  main_bgm.gain(0.5);
 						  wipe_bgm.stop();
 						  ///////icon表示
+
 						  //左のキャラアイコン
 						  drawTextureBox(-WIDTH / 2, +rand_posy - man_sizey,
 							  140, 100, 0, 0, 140, 100,
